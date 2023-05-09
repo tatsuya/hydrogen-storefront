@@ -1,11 +1,10 @@
 import {
   json,
   redirect,
-  type MetaFunction,
   type ActionFunction,
   type LoaderArgs,
 } from '@shopify/remix-oxygen';
-import {Form, useActionData} from '@remix-run/react';
+import {Form, useActionData, type V2_MetaFunction} from '@remix-run/react';
 import {useState} from 'react';
 import {Link} from '~/components';
 import {getInputStyleClasses} from '~/lib/utils';
@@ -53,10 +52,8 @@ export const action: ActionFunction = async ({request, context}) => {
   }
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'Recover Password',
-  };
+export const meta: V2_MetaFunction = () => {
+  return [{title: 'Recover Password'}];
 };
 
 export default function Recover() {
