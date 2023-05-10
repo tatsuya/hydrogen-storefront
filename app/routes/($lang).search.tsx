@@ -28,6 +28,43 @@ import {PAGINATION_SIZE} from '~/lib/const';
 import {seoPayload} from '~/lib/seo.server';
 import {SearchResultItemConnection} from '~/types';
 
+const SEARCH_PRODUCT_CARD_FRAGMENT = `#graphql
+  fragment ProductCard on Product {
+    id
+    title
+    publishedAt
+    handle
+    trackingParameters
+    variants(first: 1) {
+      nodes {
+        id
+        image {
+          url
+          altText
+          width
+          height
+        }
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+        selectedOptions {
+          name
+          value
+        }
+        product {
+          handle
+          title
+        }
+      }
+    }
+  }
+`;
+
 export async function loader({request, context: {storefront}}: LoaderArgs) {
   const searchParams = new URL(request.url).searchParams;
   const cursor = searchParams.get('cursor')!;
@@ -131,7 +168,7 @@ export default function Search() {
 }
 
 const SEARCH_QUERY = `#graphql
-  ${PRODUCT_CARD_FRAGMENT}
+  ${SEARCH_PRODUCT_CARD_FRAGMENT}
   query search(
     $searchTerm: String!
     $country: CountryCode
