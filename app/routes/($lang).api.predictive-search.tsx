@@ -59,6 +59,7 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
         id
         title
         handle
+        trackingParameters
       }
       articles {
         id
@@ -70,6 +71,7 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
           width
           height
         }
+        trackingParameters
       }
       queries {
         text

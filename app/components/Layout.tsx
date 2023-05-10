@@ -272,7 +272,11 @@ function DesktopHeader({
       };
     }
 
-    const getQueryParams = (resource: any) => '';
+    const getQueryParams = (resource: any) => {
+      return resource.trackingParameters
+        ? `?${resource.trackingParameters}`
+        : '';
+    };
 
     return {
       products: data.predictiveSearch.products.map((product: any) => {
