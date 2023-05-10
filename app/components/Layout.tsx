@@ -272,10 +272,16 @@ function DesktopHeader({
       };
     }
 
-    const getQueryParams = (resource: any) => {
-      return resource.trackingParameters
-        ? `?${resource.trackingParameters}`
-        : '';
+    const getQueryParams = (resource: any, params?: string) => {
+      if (params) {
+        return resource.trackingParameters
+          ? `?${params}&${resource.trackingParameters}`
+          : `?${params}`;
+      } else {
+        return resource.trackingParameters
+          ? `?${resource.trackingParameters}`
+          : '';
+      }
     };
 
     return {
@@ -304,12 +310,10 @@ function DesktopHeader({
         };
       }),
       queries: data.predictiveSearch.queries.map((query: any) => {
-        let queryParams = getQueryParams(query);
-        if (queryParams === '') {
-          queryParams = `?q=${encodeURIComponent(query.text)}`;
-        } else {
-          queryParams = `${queryParams}&q=${encodeURIComponent(query.text)}`;
-        }
+        const queryParams = getQueryParams(
+          query,
+          `q=${encodeURIComponent(query.text)}`,
+        );
         return {
           id: query.text,
           title: query.text,
@@ -409,6 +413,7 @@ function DesktopHeader({
                           products: 'Products',
                           articles: 'Articles',
                           pages: 'Pages',
+                          queries: 'Queries',
                         }[key];
 
                         return (

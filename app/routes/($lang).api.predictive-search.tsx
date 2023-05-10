@@ -35,7 +35,6 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     predictiveSearch(
       limit: $pageBy,
-      types: PRODUCT
       query: $searchTerm,
     ) {
       products {
