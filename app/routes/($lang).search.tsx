@@ -17,7 +17,7 @@ import {
   Heading,
   Input,
   PageHeader,
-  ProductGrid,
+  SearchGrid,
   ProductSwimlane,
   FeaturedCollections,
   Section,
@@ -26,6 +26,7 @@ import {
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {PAGINATION_SIZE} from '~/lib/const';
 import {seoPayload} from '~/lib/seo.server';
+import {SearchResultItemConnection} from '~/types';
 
 export async function loader({request, context: {storefront}}: LoaderArgs) {
   const searchParams = new URL(request.url).searchParams;
@@ -33,7 +34,7 @@ export async function loader({request, context: {storefront}}: LoaderArgs) {
   const searchTerm = searchParams.get('q')!;
 
   const data = await storefront.query<{
-    products: ProductConnection;
+    search: SearchResultItemConnection;
   }>(SEARCH_QUERY, {
     variables: {
       pageBy: PAGINATION_SIZE,
@@ -42,36 +43,17 @@ export async function loader({request, context: {storefront}}: LoaderArgs) {
       country: storefront.i18n.country,
       language: storefront.i18n.language,
     },
+    storefrontApiVersion: 'unstable',
   });
 
   invariant(data, 'No data returned from Shopify API');
-  const {products} = data;
+  const {search} = data;
 
-  const getRecommendations = !searchTerm || products?.nodes?.length === 0;
-  const seoCollection = {
-    id: 'search',
-    title: 'Search',
-    handle: 'search',
-    descriptionHtml: 'Search results',
-    description: 'Search results',
-    seo: {
-      title: 'Search',
-      description: `Showing ${products.nodes.length} search results for "${searchTerm}"`,
-    },
-    metafields: [],
-    products,
-    updatedAt: new Date().toISOString(),
-  } satisfies Collection;
-
-  const seo = seoPayload.collection({
-    collection: seoCollection,
-    url: request.url,
-  });
+  const getRecommendations = !searchTerm || search?.nodes?.length === 0;
 
   return defer({
-    seo,
     searchTerm,
-    products,
+    search,
     noResultRecommendations: getRecommendations
       ? getNoResultRecommendations(storefront)
       : Promise.resolve(null),
@@ -79,9 +61,9 @@ export async function loader({request, context: {storefront}}: LoaderArgs) {
 }
 
 export default function Search() {
-  const {searchTerm, products, noResultRecommendations} =
+  const {searchTerm, search, noResultRecommendations} =
     useLoaderData<typeof loader>();
-  const noResults = products?.nodes?.length === 0;
+  const noResults = search?.nodes?.length === 0;
 
   return (
     <>
@@ -137,10 +119,10 @@ export default function Search() {
         </>
       ) : (
         <Section>
-          <ProductGrid
+          <SearchGrid
             key="search"
             url={`/search?q=${searchTerm}`}
-            collection={{products} as Collection}
+            search={search}
           />
         </Section>
       )}
@@ -151,14 +133,15 @@ export default function Search() {
 const SEARCH_QUERY = `#graphql
   ${PRODUCT_CARD_FRAGMENT}
   query search(
-    $searchTerm: String
+    $searchTerm: String!
     $country: CountryCode
     $language: LanguageCode
     $pageBy: Int!
     $after: String
   ) @inContext(country: $country, language: $language) {
-    products(
+    search(
       first: $pageBy
+      types: PRODUCT
       sortKey: RELEVANCE
       query: $searchTerm
       after: $after
