@@ -424,7 +424,7 @@ function DesktopHeader({
 
                             <ol className="grid gap-2">
                               {items.map((item: any) => (
-                                <li key={item.id}>
+                                <li key={item.id} className="overflow-hidden">
                                   <Link
                                     className="flex items-center gap-x-2"
                                     to={item.url}
