@@ -21,10 +21,10 @@ import {
   CartLoading,
   Link,
 } from '~/components';
-import {useParams, Form, Await, useMatches} from '@remix-run/react';
+import {useParams, Form, Await, useMatches, useFetcher} from '@remix-run/react';
 import {useWindowScroll} from 'react-use';
 import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
+import {Suspense, useEffect, useMemo, useState} from 'react';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 import type {LayoutData} from '../root';
@@ -255,6 +255,67 @@ function DesktopHeader({
 }) {
   const params = useParams();
   const {y} = useWindowScroll();
+
+  const [search, setSearch] = useState('');
+  const [inputFocused, setInputFocused] = useState(false);
+
+  const fetcher = useFetcher();
+
+  const searchResults = useMemo(() => {
+    const data = fetcher.data;
+    if (!data) {
+      return {
+        products: [],
+        pages: [],
+        articles: [],
+        queries: [],
+      };
+    }
+
+    const getQueryParams = (resource: any) => '';
+
+    return {
+      products: data.predictiveSearch.products.map((product: any) => {
+        return {
+          id: product.id,
+          title: product.title,
+          image: product.variants?.nodes?.[0]?.image,
+          url: `/products/${product.handle}${getQueryParams(product)}`,
+        };
+      }),
+      articles: data.predictiveSearch.articles.map((article: any) => {
+        return {
+          id: article.id,
+          title: article.title,
+          image: article.image,
+          url: `/journal/${article.handle}${getQueryParams(article)}`,
+        };
+      }),
+      pages: data.predictiveSearch.pages.map((page: any) => {
+        return {
+          id: page.id,
+          title: page.title,
+          image: undefined,
+          url: `/pages/${page.handle}${getQueryParams(page)}`,
+        };
+      }),
+      queries: data.predictiveSearch.queries.map((query: any) => {
+        let queryParams = getQueryParams(query);
+        if (queryParams === '') {
+          queryParams = `?q=${encodeURIComponent(query.text)}`;
+        } else {
+          queryParams = `${queryParams}&q=${encodeURIComponent(query.text)}`;
+        }
+        return {
+          id: query.text,
+          title: query.text,
+          image: undefined,
+          url: `/search${queryParams}`,
+        };
+      }),
+    };
+  }, [fetcher.data]);
+
   return (
     <header
       role="banner"
@@ -288,29 +349,115 @@ function DesktopHeader({
         </nav>
       </div>
       <div className="flex items-center gap-1">
-        <Form
-          method="get"
-          action={params.lang ? `/${params.lang}/search` : '/search'}
-          className="flex items-center gap-2"
-        >
-          <Input
-            className={
-              isHome
-                ? 'focus:border-contrast/20 dark:focus:border-primary/20'
-                : 'focus:border-primary/20'
-            }
-            type="search"
-            variant="minisearch"
-            placeholder="Search"
-            name="q"
-          />
-          <button
-            type="submit"
-            className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+        <div className="relative">
+          <Form
+            method="get"
+            action={params.lang ? `/${params.lang}/search` : '/search'}
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              if (!search) {
+                e.preventDefault();
+              }
+            }}
           >
-            <IconSearch />
-          </button>
-        </Form>
+            <Input
+              className={
+                isHome
+                  ? 'focus:border-contrast/20 dark:focus:border-primary/20'
+                  : 'focus:border-primary/20'
+              }
+              type="search"
+              variant="minisearch"
+              placeholder="Search"
+              name="q"
+              value={search}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => {
+                setTimeout(() => setInputFocused(false), 200);
+              }}
+              onChange={(event: any) => {
+                const newSearch = event.target.value;
+                setSearch(newSearch);
+                if (newSearch) {
+                  fetcher.load(`/api/predictive-search?q=${search}`);
+                }
+              }}
+            />
+            <button
+              type="submit"
+              className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+            >
+              <IconSearch />
+            </button>
+          </Form>
+
+          {inputFocused && search.length > 0 && (
+            <div className="absolute top-full mt-2 w-full">
+              <div className="bg-white text-gray-800 p-4 flex flex-col gap-8">
+                {Object.values(searchResults).some(
+                  (items) => items.length > 0,
+                ) && (
+                  <div className="flex flex-col gap-4">
+                    {Object.entries(searchResults)
+                      .filter(([_key, items]) => items.length > 0)
+                      .map(([key, items]) => {
+                        const categoryName = {
+                          products: 'Products',
+                          articles: 'Articles',
+                          pages: 'Pages',
+                        }[key];
+
+                        return (
+                          <div key={key} className="grid gap-1">
+                            <div className="font-light text-sm underline">
+                              {categoryName}
+                            </div>
+
+                            <ol className="grid gap-2">
+                              {items.map((item: any) => (
+                                <li key={item.id}>
+                                  <Link
+                                    className="flex items-center gap-x-2"
+                                    to={item.url}
+                                  >
+                                    {/* {item.image?.url && (
+                                      <Image
+                                        width={24}
+                                        height={24}
+                                        src={item.image.url}
+                                        className="w-6 h-6 object-cover"
+                                        alt={item.image.altText ?? ''}
+                                      />
+                                    )} */}
+
+                                    <div className="truncate flex-grow">
+                                      {item.title}
+                                    </div>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
+
+                <Link
+                  className="flex gap-1 items-center"
+                  to={`/search?q=${search}`}
+                >
+                  <div>
+                    <IconSearch />
+                  </div>
+                  <div>
+                    Search for <q>{search}</q>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
         <AccountLink className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5" />
         <CartCount isHome={isHome} openCart={openCart} />
       </div>
