@@ -56,11 +56,15 @@ export function ProductCard({
     quantity: 1,
   };
 
+  const getQueryParams = (product: any) => {
+    return product.trackingParameters ? `?${product.trackingParameters}` : '';
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <Link
         onClick={onClick}
-        to={`/products/${product.handle}`}
+        to={`/products/${product.handle}${getQueryParams(product)}`}
         prefetch="intent"
       >
         <div className={clsx('grid gap-4', className)}>
