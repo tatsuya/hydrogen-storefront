@@ -1,0 +1,90 @@
+diff --git a/node_modules/@shopify/hydrogen-react/dist/browser-dev/analytics-schema-trekkie-storefront-page-view.mjs b/node_modules/@shopify/hydrogen-react/dist/browser-dev/analytics-schema-trekkie-storefront-page-view.mjs
+index c7ebfd9..6875484 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/browser-dev/analytics-schema-trekkie-storefront-page-view.mjs
++++ b/node_modules/@shopify/hydrogen-react/dist/browser-dev/analytics-schema-trekkie-storefront-page-view.mjs
+@@ -46,10 +46,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ export {
+diff --git a/node_modules/@shopify/hydrogen-react/dist/browser-prod/analytics-schema-trekkie-storefront-page-view.mjs b/node_modules/@shopify/hydrogen-react/dist/browser-prod/analytics-schema-trekkie-storefront-page-view.mjs
+index c7ebfd9..6875484 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/browser-prod/analytics-schema-trekkie-storefront-page-view.mjs
++++ b/node_modules/@shopify/hydrogen-react/dist/browser-prod/analytics-schema-trekkie-storefront-page-view.mjs
+@@ -46,10 +46,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ export {
+diff --git a/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.js b/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.js
+index 4f98971..a5226bc 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.js
++++ b/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.js
+@@ -48,10 +48,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ exports.pageView = pageView;
+diff --git a/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.mjs b/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.mjs
+index c7ebfd9..6875484 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.mjs
++++ b/node_modules/@shopify/hydrogen-react/dist/node-dev/analytics-schema-trekkie-storefront-page-view.mjs
+@@ -46,10 +46,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ export {
+diff --git a/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.js b/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.js
+index 4f98971..a5226bc 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.js
++++ b/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.js
+@@ -48,10 +48,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ exports.pageView = pageView;
+diff --git a/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.mjs b/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.mjs
+index c7ebfd9..6875484 100644
+--- a/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.mjs
++++ b/node_modules/@shopify/hydrogen-react/dist/node-prod/analytics-schema-trekkie-storefront-page-view.mjs
+@@ -46,10 +46,6 @@ function isMerchantRequest(url) {
+   if (typeof url !== "string") {
+     return false;
+   }
+-  const hostname = new URL(url).hostname;
+-  if (hostname.indexOf(OXYGEN_DOMAIN) !== -1 || hostname === "localhost") {
+-    return true;
+-  }
+   return false;
+ }
+ export {
